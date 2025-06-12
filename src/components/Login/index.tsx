@@ -3,16 +3,14 @@ import './Login.css';
 
 interface FormState {
   name: string;
-  username: string;
-  password: string;
+  email: string;
 }
 
 const Login: React.FC = () => {
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [form, setForm] = useState<FormState>({
     name: '',
-    username: '',
-    password: '',
+    email: '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,7 +19,7 @@ const Login: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(isLogin ? 'Logging in:' : 'Signing up:', form);
+  
   };
 
   return (
@@ -58,20 +56,20 @@ const Login: React.FC = () => {
         )}
         <input
           type="text"
-          name="username"
-          placeholder="Username"
-          value={form.username}
+          name="email"
+          placeholder="Email"
+          value={form.email}
           onChange={handleChange}
           required
         />
-        <input
+        {/* <input
           type="password"
           name="password"
           placeholder="Password"
           value={form.password}
           onChange={handleChange}
           required
-        />
+        /> */}
         <button type="submit">{isLogin ? 'Login' : 'Signup'}</button>
       </form>
     </div>

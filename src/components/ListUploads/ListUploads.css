@@ -1,0 +1,42 @@
+.sidebar-only {
+  width: 20vw;
+  height: 100vh;
+  padding: 1rem;
+  border-right: 1px solid #ccc;
+  background-color: #f8f8f8;
+  overflow-y: auto;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  font-family: Arial, sans-serif;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.url-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  max-width: 100%; /* Ensure no overflow */
+  box-sizing: border-box;
+}
+
+.url-list li {
+  width: 100%;
+  overflow: hidden;
+}
+
+.url-button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem;
+  text-decoration: none;
+  color: #333;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  overflow-wrap: break-word; /* Wrap long URLs */
+  word-break: break-word;
+}

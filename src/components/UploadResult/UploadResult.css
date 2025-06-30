@@ -1,0 +1,36 @@
+.result-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1rem;
+  font-family: Arial, sans-serif;
+}
+
+.html-preview {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1rem;
+  background-color: #fff;
+}
+
+.iframe-preview {
+  width: 100%;
+  height: 300px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+.llm-view {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+  padding: 1rem;
+}
+
+.code-block {
+  background-color: #f9f9f9;
+  padding: 1rem;
+  white-space: pre-wrap;
+  font-family: monospace;
+  border-radius: 4px;
+}

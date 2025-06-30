@@ -13,7 +13,7 @@ function App(){
         <Route path="/login" element={<Login />} />
         <Route path="/upload" element={<Upload/>} />
         <Route path="/view-webpages" element={<ViewResult/>}/>
-        <Route path="/view-webpage/:url" element={<ViewResult />} />
+        <Route path="/view-webpage/:webpageId" element={<ViewResult />} />
       </Routes>
     </BrowserRouter>
   )

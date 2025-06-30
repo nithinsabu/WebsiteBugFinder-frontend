@@ -1,46 +1,48 @@
 import React, { useEffect, useState } from "react";
 import "./UploadResult.css";
+import { useSelector } from "react-redux";
+import { type RootState } from "../../redux/store";
 
 interface ViewResultProps {
-  url: string;
+  webpageId: string;
 }
 
-const UploadResult: React.FC<ViewResultProps> = ({ url }) => {
-  const [htmlContent, setHtmlContent] = useState<string>("");
-  const [llmResponse, setLlmResponse] = useState<string>("");
+const UploadResult: React.FC<ViewResultProps> = ({ webpageId }) => {
+  const [htmlContent, setHtmlContent] = useState("");
+  const [llmResponse, setLlmResponse] = useState("");
+  const [loading, setLoading] = useState(true);
+  const email = useSelector((state: RootState) => state.app.email);
 
   useEffect(() => {
-    const sampleHtml = `
-      <html>
-        <head>
-          <style>
-            body { font-family: Arial; padding: 1rem; }
-            h1 { color: darkblue; }
-            .content { background-color: #f0f0f0; padding: 1rem; border-radius: 5px; }
-            img { width: 100px; }
-          </style>
-        </head>
-        <body>
-          <h1>Welcome to Sample Page</h1>
-          <div class="content">
-            <p>This is a paragraph with <strong>bold text</strong>.</p>
-            <img src="https://www.bigfootdigital.co.uk/wp-content/uploads/2020/07/image-optimisation-scaled.jpg" />
-          </div>
-        </body>
-      </html>
-    `;
+    const fetchData = async () => {
+      if (!email || !webpageId) return;
+      setLoading(true);
 
-    const sampleFlaws = `
-1. Missing meta tags for SEO.
-2. Image lacks alt attribute.
-3. No viewport meta tag for responsive design.
-4. Inline styles used instead of separate CSS.
-5. Low color contrast in content area.
-    `;
+      try {
+        const baseUrl = import.meta.env.VITE_API_URL;
+        const res = await fetch(
+          `${baseUrl}/WebpageAnalyse/view-webpage/${webpageId}?email=${encodeURIComponent(email)}`
+        );
 
-    setHtmlContent(sampleHtml);
-    setLlmResponse(sampleFlaws);
-  }, [url]);
+        if (res.ok) {
+          const data = await res.json();
+          setHtmlContent(data.html);
+          setLlmResponse(data.llm);
+        } else {
+          const errorText = await res.text();
+          console.error("Error fetching webpage:", errorText);
+        }
+      } catch (err) {
+        console.error("Fetch failed:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [email, webpageId]);
+
+  if (loading) return <p style={{ padding: "1rem" }}>Loading...</p>;
 
   return (
     <div className="result-container">

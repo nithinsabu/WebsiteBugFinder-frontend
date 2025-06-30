@@ -5,16 +5,15 @@ import UploadResult from "../UploadResult";
 import "./ViewResult.css";
 
 const ViewResult: React.FC = () => {
-  const { url } = useParams<{ url?: string }>();
-
+  const { webpageId } = useParams<{ webpageId?: string }>();
   return (
     <div className="viewresult-container">
       <div className="listuploads-section">
         <ListUploads />
       </div>
       <div className="uploadresult-section">
-        {url ? (
-          <UploadResult url={url} />
+        {webpageId ? (
+          <UploadResult webpageId={webpageId} />
         ) : (
           <p className="placeholder-text"><b>Select a URL to view its result. </b></p>
         )}

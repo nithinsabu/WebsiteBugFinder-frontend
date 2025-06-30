@@ -31,7 +31,6 @@ describe("Login Component", () => {
   it("switches to signup form", async () => {
     const signupToggleButton = screen.getAllByRole("button", { name: "Signup" })[0];
     await userEvent.click(signupToggleButton);
-    expect(screen.getByPlaceholderText("Name")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Email")).toBeInTheDocument();
   });
 
@@ -39,11 +38,9 @@ describe("Login Component", () => {
     const signupToggleButton = screen.getAllByRole("button", { name: "Signup" })[0];
     await userEvent.click(signupToggleButton);
 
-    const nameInput = screen.getByPlaceholderText("Name");
     const emailInput = screen.getByPlaceholderText("Email");
     const submitButton = screen.getAllByRole("button", { name: "Signup" })[1];
 
-    await userEvent.type(nameInput, "Test User");
     await userEvent.type(emailInput, "test@example.com");
     await userEvent.click(submitButton);
 

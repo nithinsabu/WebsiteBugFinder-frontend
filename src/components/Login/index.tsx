@@ -1,31 +1,43 @@
 import React, { useState } from 'react';
 import './Login.css';
-
-interface FormState {
-  name: string;
-  email: string;
-}
+import { useDispatch } from 'react-redux';
+import { setEmail } from '../../redux/appSlice';
+import { useNavigate } from 'react-router-dom';
 
 const Login: React.FC = () => {
   const [isLogin, setIsLogin] = useState<boolean>(true);
-  const [form, setForm] = useState<FormState>({
-    name: '',
-    email: '',
-  });
+  const [email, setEmailInput] = useState<string>('');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  
+    const baseUrl = import.meta.env.VITE_API_URL;
+
+    try {
+      const url = isLogin
+        ? `${baseUrl}/WebpageAnalyse/login?email=${encodeURIComponent(email)}`
+        : `${baseUrl}/WebpageAnalyse/signup?email=${encodeURIComponent(email)}`;
+
+      const response = await fetch(url, { method: 'POST' });
+
+      if (response.ok) {
+        const data = await response.json();
+        dispatch(setEmail(data.email));
+        alert(`${isLogin ? 'Login' : 'Signup'} successful`);
+        // navigate('/view-webpages');
+      } else {
+        const errorText = await response.text();
+        alert(errorText || 'Something went wrong.');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Something went wrong. Please try again later.');
+    }
   };
 
   return (
-    <>
     <div className="form-container">
-      
       <div className="toggle-buttons">
         <button
           className={isLogin ? 'active' : ''}
@@ -44,36 +56,17 @@ const Login: React.FC = () => {
       </div>
 
       <form onSubmit={handleSubmit}>
-        {!isLogin && (
-          <input
-            type="text"
-            name="name"
-            placeholder="Name"
-            value={form.name}
-            onChange={handleChange}
-            required={!isLogin}
-          />
-        )}
         <input
           type="text"
           name="email"
           placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
+          value={email}
+          onChange={(e) => setEmailInput(e.target.value)}
           required
         />
-        {/* <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        /> */}
         <button type="submit">{isLogin ? 'Login' : 'Signup'}</button>
       </form>
     </div>
-    </>
   );
 };
 

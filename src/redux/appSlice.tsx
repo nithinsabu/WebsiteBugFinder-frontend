@@ -1,46 +1,47 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
+interface WebpageSummary {
+  id: string;
+  name?: string;
+  uploadDate?: string;
+  fileName?: string;
+  url?: string;
+}
+
 interface AppState {
-  name: string;
   email: string;
-  uploadURLs: string[];
+  webpages: WebpageSummary[];
 }
 
 const initialState: AppState = {
-  name: "",
   email: "",
-  uploadURLs: ['webpage-1', 'webpage-2'],
+  webpages: [],
 };
 
 const appSlice = createSlice({
   name: "app",
   initialState,
   reducers: {
-    setName(state, action: PayloadAction<string>) {
-      state.name = action.payload;
-    },
     setEmail(state, action: PayloadAction<string>) {
       state.email = action.payload;
     },
-    addUploadURL(state, action: PayloadAction<string>) {
-      state.uploadURLs.push(action.payload);
+    setWebpages(state, action: PayloadAction<WebpageSummary[]>) {
+      state.webpages = action.payload;
     },
-    setUploadURLs(state, action: PayloadAction<string[]>) {
-      state.uploadURLs = action.payload;
+    addWebpage(state, action: PayloadAction<WebpageSummary>) {
+      state.webpages.push(action.payload);
     },
     clearAll(state) {
-      state.name = "";
       state.email = "";
-      state.uploadURLs = [];
+      state.webpages = [];
     },
   },
 });
 
 export const {
-  setName,
   setEmail,
-  addUploadURL,
-  setUploadURLs,
+  setWebpages,
+  addWebpage,
   clearAll,
 } = appSlice.actions;
 

@@ -55,9 +55,9 @@ describe("Upload", () => {
     });
     it("Upload files work", async () => {
         await userEvent.click(screen.getByRole("button", { name: "Upload HTML File" }));
-        const htmlFileInput = screen.getByLabelText("Upload HTML File:");
-        const designFileInput = screen.getByLabelText("Optional: Upload design file:");
-        const specFileInput = screen.getByLabelText("Optional: Specifications design file:");
+        const htmlFileInput = screen.getByLabelText("Upload HTML File:") as HTMLInputElement;
+        const designFileInput = screen.getByLabelText("Optional: Upload design file:") as HTMLInputElement;
+        const specFileInput = screen.getByLabelText("Optional: Specifications design file:") as HTMLInputElement;
 
         const htmlFile = new File(["<html></html>"], "index.html", { type: "text/html" });
         const designFile = new File(["design"], "design.png", { type: "image/png" });
@@ -67,13 +67,13 @@ describe("Upload", () => {
         await userEvent.upload(designFileInput, designFile);
         await userEvent.upload(specFileInput, specFile);
 
-        expect(htmlFileInput.files[0]).toBe(htmlFile);
+        expect(htmlFileInput.files?.[0]).toBe(htmlFile);
         expect(htmlFileInput.files).toHaveLength(1);
 
-        expect(designFileInput.files[0]).toBe(designFile);
+        expect(designFileInput.files?.[0]).toBe(designFile);
         expect(designFileInput.files).toHaveLength(1);
 
-        expect(specFileInput.files[0]).toBe(specFile);
+        expect(specFileInput.files?.[0]).toBe(specFile);
         expect(specFileInput.files).toHaveLength(1);
     });
     it("Submit button Enables", async () => {

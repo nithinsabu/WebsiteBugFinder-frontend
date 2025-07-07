@@ -44,5 +44,5 @@ export const {
   addWebpage,
   clearAll,
 } = appSlice.actions;
-
+export type { WebpageSummary } ;
 export default appSlice.reducer;

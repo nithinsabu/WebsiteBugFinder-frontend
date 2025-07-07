@@ -47,3 +47,17 @@
     height: 100%;
   }
   
+  .navbar-logo-link {
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+  
+  .navbar-logo-link:hover .navbar-title {
+    background-color: rgba(255, 255, 255, 0.1); /* optional hover effect */
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+  

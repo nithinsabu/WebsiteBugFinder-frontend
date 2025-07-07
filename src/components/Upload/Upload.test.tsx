@@ -1,11 +1,42 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
-
+import { configureStore } from "@reduxjs/toolkit";
+import appReducer from "../../redux/appSlice";
+import { Provider } from "react-redux";
+import { MemoryRouter } from "react-router-dom";
 import Upload from ".";
 describe("Upload", () => {
-    beforeEach(() =>{render(<Upload />);})
+
+    beforeEach(() =>{
+        vi.stubGlobal("fetch", vi.fn(() =>
+            Promise.resolve({
+              ok: true,
+              json: () => Promise.resolve({ email: "test@example.com" }),
+            } as Response)
+          ));
+          vi.stubGlobal("alert", vi.fn());
+          const store = configureStore({
+                reducer: {
+                    app: appReducer,
+                },
+                preloadedState: {
+                    app: {
+                        email: "",
+                        webpages: [],
+                    },
+                },
+            });
+          
+            render(
+                <Provider store={store}>
+                    <MemoryRouter>
+                    <Upload />
+                    </MemoryRouter>
+                </Provider>
+            );
+    })
     afterEach(() => cleanup())
     it("Renders component", () => {
         expect(screen.getByRole("button", { name: "Upload HTML File" })).toBeInTheDocument();
@@ -24,9 +55,9 @@ describe("Upload", () => {
     });
     it("Upload files work", async () => {
         await userEvent.click(screen.getByRole("button", { name: "Upload HTML File" }));
-        const htmlFileInput = screen.getByLabelText("Upload HTML File:");
-        const designFileInput = screen.getByLabelText("Optional: Upload design file:");
-        const specFileInput = screen.getByLabelText("Optional: Specifications design file:");
+        const htmlFileInput = screen.getByLabelText("Upload HTML File:") as HTMLInputElement;
+        const designFileInput = screen.getByLabelText("Optional: Upload design file:") as HTMLInputElement;
+        const specFileInput = screen.getByLabelText("Optional: Specifications design file:") as HTMLInputElement;
 
         const htmlFile = new File(["<html></html>"], "index.html", { type: "text/html" });
         const designFile = new File(["design"], "design.png", { type: "image/png" });
@@ -36,13 +67,13 @@ describe("Upload", () => {
         await userEvent.upload(designFileInput, designFile);
         await userEvent.upload(specFileInput, specFile);
 
-        expect(htmlFileInput.files[0]).toBe(htmlFile);
+        expect(htmlFileInput.files?.[0]).toBe(htmlFile);
         expect(htmlFileInput.files).toHaveLength(1);
 
-        expect(designFileInput.files[0]).toBe(designFile);
+        expect(designFileInput.files?.[0]).toBe(designFile);
         expect(designFileInput.files).toHaveLength(1);
 
-        expect(specFileInput.files[0]).toBe(specFile);
+        expect(specFileInput.files?.[0]).toBe(specFile);
         expect(specFileInput.files).toHaveLength(1);
     });
     it("Submit button Enables", async () => {

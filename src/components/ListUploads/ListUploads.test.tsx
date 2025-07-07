@@ -6,57 +6,81 @@ import "@testing-library/jest-dom/vitest";
 import ListUploads from ".";
 import { configureStore } from "@reduxjs/toolkit";
 import appReducer from "../../redux/appSlice";
+import type { WebpageSummary } from "../../redux/appSlice";
+function renderWithState(webpages: WebpageSummary[]) {
+    const store = configureStore({
+        reducer: {
+            app: appReducer,
+        },
+        preloadedState: {
+            app: {
+                email: "",
+                webpages: webpages,
+            },
+        },
+    });
 
-function renderWithState(uploadURLs: string[]) {
-  const store = configureStore({
-    reducer: {
-      app: appReducer,
-    },
-    preloadedState: {
-      app: {
-        name: "",
-        email: "",
-        uploadURLs,
-      },
-    },
-  });
-
-  render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <ListUploads />
-      </MemoryRouter>
-    </Provider>
-  );
+    render(
+        <Provider store={store}>
+            <MemoryRouter>
+                <ListUploads />
+            </MemoryRouter>
+        </Provider>
+    );
 }
 
 describe("ListUploads Component", () => {
-  afterEach(() => {
-    cleanup();
-  });
-
-  it("renders message when no URLs are uploaded", () => {
-    renderWithState([]);
-    expect(screen.getByText("No URLs uploaded.")).toBeInTheDocument();
-  });
-
-  it("renders list of uploaded URLs", () => {
-    const urls = ["abcdef", "pqrst"];
-    renderWithState(urls);
-
-    urls.forEach((url) => {
-      expect(screen.getByRole("link", { name: url })).toBeInTheDocument();
+    afterEach(() => {
+        cleanup();
     });
-  });
 
-  it("renders links with correct href", () => {
-    const urls = ["abcdef"];
-    renderWithState(urls);
+    it("renders message when no URLs are uploaded", () => {
+        renderWithState([]);
+        expect(screen.getByText("No URLs uploaded.")).toBeInTheDocument();
+    });
 
-    const link = screen.getByRole("link", { name: urls[0] });
-    expect(link).toHaveAttribute(
-      "href",
-      `/view-webpage/${encodeURIComponent(urls[0])}`
-    );
-  });
+    it("renders list of uploaded URLs", () => {
+        const webpages = [
+            {
+                id: "1",
+                name: "Test Webpage",
+                uploadDate: "2023-10-01",
+                fileName: "test-webpage.html",
+            },
+            {
+                id: "2",
+                name: "Another Webpage",
+                uploadDate: "2023-10-02",
+                filename: "another-webpage.html",
+            },
+        ];
+        renderWithState(webpages);
+
+        webpages.forEach(webpage => {
+            expect(screen.getByRole("link", { name: new RegExp(webpage.name, "i") })).toBeInTheDocument();
+            expect(screen.getByText(new RegExp(new Date(webpage.uploadDate).toLocaleString(), "i"))).toBeInTheDocument();
+        });
+    });
+
+    it("renders links with correct href", () => {
+        const webpages = [
+            {
+                id: "1",
+                name: "Test Webpage",
+                uploadDate: "2023-10-01",
+                fileName: "test-webpage.html",
+            },
+            {
+                id: "2",
+                name: "Another Webpage",
+                uploadDate: "2023-10-02",
+                filename: "another-webpage.html",
+            },
+        ];
+        renderWithState(webpages);
+
+        webpages.forEach(webpage => {
+            expect(screen.getByRole("link", { name: new RegExp(webpage.name, "i") })).toHaveAttribute("href", `/view-webpage/${webpage.id}`);
+        });
+    });
 });

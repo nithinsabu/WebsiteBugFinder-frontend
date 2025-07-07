@@ -25,7 +25,7 @@ const Login: React.FC = () => {
         const data = await response.json();
         dispatch(setEmail(data.email));
         alert(`${isLogin ? 'Login' : 'Signup'} successful`);
-        // navigate('/view-webpages');
+        navigate('/view-webpages');
       } else {
         const errorText = await response.text();
         alert(errorText || 'Something went wrong.');

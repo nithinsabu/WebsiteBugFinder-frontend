@@ -1,4 +1,4 @@
-name: Deploy React App
+name: CD react
 on:
   push:
     branches:

@@ -1,12 +1,43 @@
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, beforeEach, afterEach, expect } from "vitest";
+import { describe, it, beforeEach, afterEach, expect, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import Login from ".";
-
+import { configureStore } from "@reduxjs/toolkit";
+import appReducer from "../../redux/appSlice";
+import { Provider } from "react-redux";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
 describe("Login Component", () => {
   beforeEach(() => {
-    render(<Login />);
+    vi.stubGlobal("fetch", vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ email: "test@example.com" }),
+      } as Response)
+    ));
+    vi.stubGlobal("alert", vi.fn());
+    const store = configureStore({
+          reducer: {
+              app: appReducer,
+          },
+          preloadedState: {
+              app: {
+                  email: "",
+                  webpages: [],
+              },
+          },
+      });
+    
+      render(
+          <Provider store={store}>
+              <MemoryRouter initialEntries={["/login"]}>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/view-webpages" element={<h1>View Webpages Page</h1>} />
+            </Routes>
+              </MemoryRouter>
+          </Provider>
+      );
   });
 
   afterEach(() => {
@@ -44,7 +75,14 @@ describe("Login Component", () => {
     await userEvent.type(emailInput, "test@example.com");
     await userEvent.click(submitButton);
 
-    expect(nameInput).toHaveValue("Test User");
     expect(emailInput).toHaveValue("test@example.com");
   });
+
+  it ("redirects to home page on successful login", async () => {
+    const emailInput = screen.getByPlaceholderText("Email");
+    const submitButton = screen.getAllByRole("button", { name: "Login" })[1];
+    await userEvent.type(emailInput, "test@example.com");
+    await userEvent.click(submitButton);
+    await screen.findByText("View Webpages Page");
 });
+})

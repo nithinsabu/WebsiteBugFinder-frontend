@@ -1,11 +1,42 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
-
+import { configureStore } from "@reduxjs/toolkit";
+import appReducer from "../../redux/appSlice";
+import { Provider } from "react-redux";
+import { MemoryRouter } from "react-router-dom";
 import Upload from ".";
 describe("Upload", () => {
-    beforeEach(() =>{render(<Upload />);})
+
+    beforeEach(() =>{
+        vi.stubGlobal("fetch", vi.fn(() =>
+            Promise.resolve({
+              ok: true,
+              json: () => Promise.resolve({ email: "test@example.com" }),
+            } as Response)
+          ));
+          vi.stubGlobal("alert", vi.fn());
+          const store = configureStore({
+                reducer: {
+                    app: appReducer,
+                },
+                preloadedState: {
+                    app: {
+                        email: "",
+                        webpages: [],
+                    },
+                },
+            });
+          
+            render(
+                <Provider store={store}>
+                    <MemoryRouter>
+                    <Upload />
+                    </MemoryRouter>
+                </Provider>
+            );
+    })
     afterEach(() => cleanup())
     it("Renders component", () => {
         expect(screen.getByRole("button", { name: "Upload HTML File" })).toBeInTheDocument();

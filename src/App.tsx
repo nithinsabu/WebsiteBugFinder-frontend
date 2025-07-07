@@ -4,7 +4,6 @@ import Upload from './components/Upload'
 import { Route, BrowserRouter, Routes } from 'react-router'
 import ViewResult from './components/ViewResult'
 function App(){
-  // const [count, setCount] = useState(0)
 
   return (
     <BrowserRouter>

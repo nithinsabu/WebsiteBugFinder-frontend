@@ -26,13 +26,15 @@ const UploadResult: React.FC<ViewResultProps> = ({ webpageId }) => {
 
         if (res.ok) {
           const data = await res.json();
-          setHtmlContent(data.html);
-          setLlmResponse(data.llm);
+          setHtmlContent(data.htmlContent);
+          setLlmResponse(data.llmResponse);
         } else {
           const errorText = await res.text();
           console.error("Error fetching webpage:", errorText);
+          throw new Error(errorText);
         }
       } catch (err) {
+        setLlmResponse("ERROR fetching content")
         console.error("Fetch failed:", err);
       } finally {
         setLoading(false);

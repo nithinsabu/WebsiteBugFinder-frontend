@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import ListUploads from "../ListUploads";
-import UploadResult from "../UploadResult";
+import ListUploads from "../../components/ListUploads";
+import UploadResult from "../../components/UploadResult";
 import "./ViewResult.css";
 
 const ViewResult: React.FC = () => {

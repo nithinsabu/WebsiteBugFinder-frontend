@@ -1,29 +1,40 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import ViewResult from ".";
-import { describe, it, vi, expect, afterEach } from "vitest";
+import { describe, it, vi, expect, afterEach, beforeAll } from "vitest";
 import "@testing-library/jest-dom/vitest";
+import { Provider } from "react-redux";
+import { store } from "../../redux/store";
+
 // Mocks
-vi.mock("../ListUploads", () => ({
+vi.mock("../../components/ListUploads", () => ({
   default: () => <div>Mocked ListUploads</div>,
 }));
-vi.mock("../UploadResult", () => ({
+
+vi.mock("../../components/UploadResult", () => ({
   default: ({ webpageId }: { webpageId: string }) => (
     <div>Mocked UploadResult for {webpageId}</div>
   ),
 }));
 
+beforeAll(() => {
+  vi.stubGlobal("alert", vi.fn());
+});
+
 describe("ViewResult", () => {
-    afterEach(() => {
-        cleanup();
-    })
+  afterEach(() => {
+    cleanup();
+  });
+
   it("renders placeholder when no webpageId param", () => {
     render(
-      <MemoryRouter initialEntries={["/view-result"]}>
-        <Routes>
-          <Route path="/view-result" element={<ViewResult />} />
-        </Routes>
-      </MemoryRouter>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={["/view-result"]}>
+          <Routes>
+            <Route path="/view-result" element={<ViewResult />} />
+          </Routes>
+        </MemoryRouter>
+      </Provider>
     );
 
     expect(screen.getByText("Mocked ListUploads")).toBeInTheDocument();
@@ -32,11 +43,13 @@ describe("ViewResult", () => {
 
   it("renders UploadResult when webpageId is present", () => {
     render(
-      <MemoryRouter initialEntries={["/view-result/123"]}>
-        <Routes>
-          <Route path="/view-result/:webpageId" element={<ViewResult />} />
-        </Routes>
-      </MemoryRouter>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={["/view-result/123"]}>
+          <Routes>
+            <Route path="/view-result/:webpageId" element={<ViewResult />} />
+          </Routes>
+        </MemoryRouter>
+      </Provider>
     );
 
     expect(screen.getByText("Mocked ListUploads")).toBeInTheDocument();

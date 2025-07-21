@@ -1,8 +1,8 @@
-import Login from './components/Login'
+import Login from './Pages/Login'
 import Navbar from './components/Navbar'
-import Upload from './components/Upload'
+import Upload from './Pages/Upload'
 import { Route, BrowserRouter, Routes } from 'react-router'
-import ViewResult from './components/ViewResult'
+import ViewResult from './Pages/ViewResult'
 function App(){
 
   return (

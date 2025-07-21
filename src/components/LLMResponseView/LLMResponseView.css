@@ -1,0 +1,64 @@
+.result-viewer {
+    padding: 1rem;
+    font-family: Arial, sans-serif;
+    color: #333;
+  }
+  
+  .result-viewer section {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border-radius: 6px;
+  }
+  
+  .executive-summary {
+    background: #e6f7ff;
+    border-left: 5px solid #1890ff;
+  }
+  
+  .detailed-analysis {
+    background: #fffbe6;
+    border-left: 5px solid #faad14;
+  }
+  
+  .analysis-section {
+    margin-top: 1rem;
+    background: #fff;
+    padding: 0.5rem;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+  }
+  
+  .non-llm-evaluations {
+    background: #f6ffed;
+    border-left: 5px solid #52c41a;
+  }
+  
+  .evaluation-section {
+    margin-top: 1rem;
+    background: #fff;
+    padding: 0.5rem;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+  }
+  
+  .other-issues {
+    background: #fff0f6;
+    border-left: 5px solid #eb2f96;
+  }
+  
+  .result-viewer ul {
+    margin-left: 1.5rem;
+    list-style: disc;
+  }
+  
+  .result-viewer li {
+    margin-bottom: 0.75rem;
+  }
+  
+  .result-viewer code {
+    background: #f5f5f5;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: monospace;
+  }
+  

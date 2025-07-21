@@ -52,9 +52,19 @@ const Upload: React.FC = () => {
             alert("Email not set. Please log in first.");
             return;
         }
-        if (!email || !name.trim()) return alert("Email and name are required.");
-        if (!htmlFile && !url.trim()) return alert("Provide HTML file or URL.");
-        if (htmlFile && url.trim()) return alert("Only one of HTML file or URL allowed.");
+        if (!email || !name.trim()) {
+            setIsSubmitting(false);
+
+            return alert("Email and name are required.");
+        }
+        if (!htmlFile && !url.trim()) {
+            setIsSubmitting(false);
+            return alert("Provide HTML file or URL.");
+        }
+        if (htmlFile && url.trim()) {
+            setIsSubmitting(false);
+            return alert("Only one of HTML file or URL allowed.");
+        }
 
         if (htmlFile) {
             formData.append("htmlFile", htmlFile);

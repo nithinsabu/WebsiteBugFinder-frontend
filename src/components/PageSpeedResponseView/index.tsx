@@ -49,6 +49,7 @@ export interface PageSpeedResponse {
 
 interface Props {
   data?: PageSpeedResponse | null;
+  errorFlag: boolean;
 }
 
 const metricFullName: Record<string, string> = {
@@ -74,8 +75,9 @@ const getScoreColor = (score: number) => {
   return "score-poor";
 };
 
-const PageSpeedResponseView: React.FC<Props> = ({ data }) => {
-  if (!data) return <div className="page-speed-metrics"><h1>Failed to load PageSpeed data</h1></div>;
+const PageSpeedResponseView: React.FC<Props> = ({ data, errorFlag}) => {
+  if (errorFlag!==false)return <div className="pagespeed-response error">Pagespeed Results failed to load.</div>;
+  if (!data) return <div className="pagespeed-response error">PageSpeed data not available for HTML file.</div>;
 
   const metrics = data.loadingExperience.metrics;
   const categories = data.lighthouseResult.categories;
@@ -107,7 +109,7 @@ const PageSpeedResponseView: React.FC<Props> = ({ data }) => {
 
   return (
     <div className="page-speed-metrics">
-      <h1>PageSpeed Metrics</h1>
+      <h2>PageSpeed Metrics:</h2>
       <div><strong>Overall Category:</strong> {data.loadingExperience.overall_category}</div>
 
       <div className="metrics-section">
@@ -128,7 +130,7 @@ const PageSpeedResponseView: React.FC<Props> = ({ data }) => {
         </div>
         <div className="score-bar">
           <div
-            className={`score-fill ${getScoreColor(score * 100)}`}
+            className={`score-fill ${getScoreColor(score)}`}
             style={{ width: `${score * 100}%` }}
           />
         </div>

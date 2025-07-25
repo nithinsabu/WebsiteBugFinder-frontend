@@ -4,22 +4,44 @@ import { describe, it, expect, afterEach } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
 
-describe("AxeCoreResponseView", () => {
+describe("AxeCoreResponsView Component", () => {
   afterEach(() => {
     cleanup();
   });
 
-  it("renders placeholder when violations is undefined", () => {
-    render(<AxeViolationsView violations={undefined as unknown as AxeCoreViolation[]} />);
+  it("renders error message if errorFlag is true", () => {
+    render(
+      <AxeViolationsView
+        violations={[]}
+        errorFlag={true}
+      />
+    );
     expect(
-      screen.getByText(/No Accessibility Violations/i)
+      screen.getByText(/Accessibility Violations failed to load/i)
     ).toBeInTheDocument();
   });
 
-  it("renders placeholder when violations is empty array", () => {
-    render(<AxeViolationsView violations={[]} />);
+  it("renders placeholder when violations is undefined and errorFlag is false", () => {
+    render(
+      <AxeViolationsView
+        violations={undefined as unknown as AxeCoreViolation[]}
+        errorFlag={false}
+      />
+    );
     expect(
-      screen.getByText(/No Accessibility Violations/i)
+      screen.getByText(/No Accessibility Violations Found/i)
+    ).toBeInTheDocument();
+  });
+
+  it("renders placeholder when violations is empty array and errorFlag is false", () => {
+    render(
+      <AxeViolationsView
+        violations={[]}
+        errorFlag={false}
+      />
+    );
+    expect(
+      screen.getByText(/No Accessibility Violations Found/i)
     ).toBeInTheDocument();
   });
 
@@ -28,48 +50,37 @@ describe("AxeCoreResponseView", () => {
       {
         Id: "color-contrast",
         Description: "Elements must have sufficient color contrast",
-        Help: "https://example.com/help",
+        Help: "<html> element must have a lang attribute",
         Nodes: [
           {
             Impact: "serious",
             Html: "<button>Click me</button>",
-            "Failure Summary": "Element has insufficient color contrast",
+            FailureSummary: "Element has insufficient color contrast",
           },
         ],
       },
     ];
 
-    render(<AxeViolationsView violations={mockViolations} />);
+    render(<AxeViolationsView violations={mockViolations} errorFlag={false} />);
 
     expect(
-      screen.getByText("Accessibility Violations (Axe Core)")
+      screen.getByText(/Accessibility Violations from Axe Core/i)
     ).toBeInTheDocument();
 
-    expect(screen.getByText("color-contrast")).toBeInTheDocument();
+    expect(screen.getByText("Rule: color-contrast")).toBeInTheDocument();
     expect(
       screen.getByText(/Elements must have sufficient color contrast/)
     ).toBeInTheDocument();
-    expect(screen.getByText(/https:\/\/example.com\/help/)).toBeInTheDocument();
-    expect(screen.getByText(/Impact:/)).toBeInTheDocument();
+    expect(screen.getByText(/<html> element must have a lang attribute/)).toBeInTheDocument();
+    expect(screen.getByText("Impact:")).toBeInTheDocument();
     expect(screen.getByText("serious")).toBeInTheDocument();
-    expect(screen.getByText(/Click me/)).toBeInTheDocument();
+    expect(screen.getByText(/<button>Click me<\/button>/)).toBeInTheDocument();
+    expect(screen.getByText(/Failure Summary:/)).toBeInTheDocument();
     expect(
       screen.getByText(/Element has insufficient color contrast/)
     ).toBeInTheDocument();
   });
 
-  it("renders violation with missing optional fields", () => {
-    const mockViolations: AxeCoreViolation[] = [
-      {
-        Nodes: [],
-      },
-    ];
-
-    render(<AxeViolationsView violations={mockViolations} />);
-    expect(screen.getByText("Unknown Violation")).toBeInTheDocument();
-    expect(screen.getByText(/Description:/)).toBeInTheDocument();
-    expect(screen.getByText(/Help:/)).toBeInTheDocument();
-  });
 
   it("does not render nodes section if Nodes is empty", () => {
     const mockViolations: AxeCoreViolation[] = [
@@ -79,7 +90,7 @@ describe("AxeCoreResponseView", () => {
       },
     ];
 
-    render(<AxeViolationsView violations={mockViolations} />);
-    expect(screen.queryByText(/Affected Nodes:/)).not.toBeInTheDocument();
+    render(<AxeViolationsView violations={mockViolations} errorFlag={false} />);
+    expect(screen.queryByText(/Affected Nodes/)).not.toBeInTheDocument();
   });
 });

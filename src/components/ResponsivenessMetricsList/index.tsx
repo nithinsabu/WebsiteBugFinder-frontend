@@ -8,13 +8,18 @@ export interface ResponsivenessMetrics {
 
 interface ResponsivenessMetricsListProps {
   data: ResponsivenessMetrics[];
+  errorFlag: boolean;
 }
 
-const ResponsivenessMetricsList: React.FC<ResponsivenessMetricsListProps> = ({ data }) => {
-  console.log(data)
+const ResponsivenessMetricsList: React.FC<ResponsivenessMetricsListProps> = ({ data, errorFlag }) => {
+  // console.log(errorFlag)
+  if (errorFlag!==false){
+    return <div className="responsiveness-metrics error">Responsiveness Results failed to load.</div>;
+
+  }
   return (
     <div className="responsiveness-metrics">
-      <h1>Responsiveness Metrics</h1>
+      <h2>Responsiveness Metrics</h2>
       <table className="metrics-table">
         <thead>
           <tr>

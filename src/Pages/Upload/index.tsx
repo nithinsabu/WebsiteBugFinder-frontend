@@ -8,7 +8,7 @@ const Upload: React.FC = () => {
     const [htmlFile, setHtmlFile] = useState<File | null>(null);
     const [url, setUrl] = useState("");
     const [designFile, setDesignFile] = useState<File | null>(null);
-    const [SpecificationsFile, setSpecificationsFile] = useState<File | null>(null);
+    const [specificationsFile, setSpecificationsFile] = useState<File | null>(null);
     const [name, setName] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -40,7 +40,7 @@ const Upload: React.FC = () => {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {    
         e.preventDefault();
         if (isSubmitting) return;
         setIsSubmitting(true);
@@ -48,10 +48,7 @@ const Upload: React.FC = () => {
         const baseUrl = import.meta.env.VITE_API_URL;
         const formData = new FormData();
 
-        if (!email) {
-            alert("Email not set. Please log in first.");
-            return;
-        }
+        
         if (!email || !name.trim()) {
             setIsSubmitting(false);
 
@@ -65,7 +62,34 @@ const Upload: React.FC = () => {
             setIsSubmitting(false);
             return alert("Only one of HTML file or URL allowed.");
         }
-
+        if (!name.trim()) {
+            alert("Project name is required.");
+            return;
+          }
+          
+          const invalidChars = /[<>"'\\;|*?:#&]/;
+          if (invalidChars.test(name)) {
+            alert("Project name cannot contain escape characters.");
+            return;
+          }
+          
+          const validImageExts = [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".svg"];
+          if (designFile) {
+            const designExt = designFile.name.substring(designFile.name.lastIndexOf(".")).toLowerCase();
+            if (!validImageExts.includes(designExt)) {
+              alert("Invalid design file format. Allowed: png, jpg, jpeg, gif, bmp, svg.");
+              return;
+            }
+          }
+          
+          if (specificationsFile) {
+            const specExt = specificationsFile.name.substring(specificationsFile.name.lastIndexOf(".")).toLowerCase();
+            console.log(specExt);
+            if (specExt !== ".txt" && specExt !== ".pdf") {
+              alert("Invalid specification file format. Allowed: txt, pdf.");
+              return;
+            }
+          }
         if (htmlFile) {
             formData.append("htmlFile", htmlFile);
         } else if (url.trim()) {
@@ -76,8 +100,8 @@ const Upload: React.FC = () => {
             formData.append("designFile", designFile);
         }
 
-        if (SpecificationsFile) {
-            formData.append("specificationFile", SpecificationsFile);
+        if (specificationsFile) {
+            formData.append("specificationFile", specificationsFile);
         }
 
         if (name.trim()) {
@@ -132,17 +156,18 @@ const Upload: React.FC = () => {
 
             <label className="upload-label">
                 Optional: Upload design file:
-                <input type="file" onChange={onDesignFileChange} />
+                <input type="file"     accept=".png,.jpg,.jpeg,.gif,.bmp,.svg"
+onChange={onDesignFileChange} />
             </label>
 
             <label className="upload-label">
-                Optional: Specifications design file:
-                <input type="file" onChange={onSpecificationsFileChange} />
+                Optional: Specifications file:
+                <input type="file" accept=".txt,.pdf" onChange={onSpecificationsFileChange} />
             </label>
 
             <label className="upload-label">
                 Optional: Give a name:
-                <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Project Name" />
+                <input required type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Project Name" />
             </label>
 
             <button type="submit" disabled={isSubmitting || (!htmlFile && !url)}>

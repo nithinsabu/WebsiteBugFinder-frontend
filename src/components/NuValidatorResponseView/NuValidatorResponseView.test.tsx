@@ -1,94 +1,66 @@
-import { render, screen, cleanup } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { describe, it, expect, afterEach } from "vitest";
+import NuValidatorMessagesView, {type NuValidatorMessage } from ".";
 import "@testing-library/jest-dom/vitest";
-import NuValidatorMessagesView, { type NuValidatorMessage } from ".";
 
 describe("NuValidatorMessagesView", () => {
+  const sampleMessages: NuValidatorMessage[] = [
+    {
+      Type: "error",
+      "Last Line": 12,
+      "Last Column": 5,
+      "First Column": 3,
+      Message: "Element “img” is missing required attribute “alt”.",
+      Extract: '<img src="image.jpg">',
+      HiliteStart: 0,
+      HiliteLength: 4,
+    },
+    {
+      Type: "warning",
+      "Last Line": 24,
+      "Last Column": 10,
+      "First Column": 5,
+      Message: "Consider adding a lang attribute to the <html> tag.",
+      Extract: "<html>",
+      HiliteStart: 0,
+      HiliteLength: 6,
+    },
+  ];
   afterEach(() => {
     cleanup();
+  })
+  it("renders error message if errorFlag is true", () => {
+    render(<NuValidatorMessagesView messages={sampleMessages} errorFlag={true} />);
+    expect(screen.getByText(/Validator Results failed to load/i)).toBeInTheDocument();
   });
 
-  it("renders placeholder when messages is undefined", () => {
-    render(<NuValidatorMessagesView messages={undefined as unknown as NuValidatorMessage[]} />);
-    expect(
-      screen.getByText(/No Validation Errors Found/i)
-    ).toBeInTheDocument();
+  it("renders no-validation placeholder if messages is empty and errorFlag is false", () => {
+    render(<NuValidatorMessagesView messages={[]} errorFlag={false} />);
+    expect(screen.getByText(/No Validation Errors Found/i)).toBeInTheDocument();
   });
 
-  it("renders placeholder when messages is empty array", () => {
-    render(<NuValidatorMessagesView messages={[]} />);
-    expect(
-      screen.getByText(/No Validation Errors Found/i)
-    ).toBeInTheDocument();
-  });
+  it("renders validation messages if present and errorFlag is false", () => {
+    render(<NuValidatorMessagesView messages={sampleMessages} errorFlag={false} />);
 
-  it("renders validation message with highlighted text and location", () => {
-    const mockMessages: NuValidatorMessage[] = [
-      {
-        Type: "error",
-        Message: "An error occurred.",
-        "Last Line": 10,
-        "Last Column": 5,
-        "First Column": 1,
-        Extract: "<div>Invalid</div>",
-        HiliteStart: 5,
-        HiliteLength: 7,
-      },
-    ];
-
-    render(<NuValidatorMessagesView messages={mockMessages} />);
-
-    expect(screen.getByText("Validation Errors")).toBeInTheDocument();
-    expect(screen.getByText("Type:")).toBeInTheDocument();
+    expect(screen.getByText(/Validation Errors/)).toBeInTheDocument();
+    expect(screen.getByText(/\(2\)/)).toBeInTheDocument();
+    expect(screen.getAllByText(/Type:/i)).toHaveLength(2);
     expect(screen.getByText("error")).toBeInTheDocument();
-    expect(screen.getByText("Message:")).toBeInTheDocument();
-    expect(screen.getByText("An error occurred.")).toBeInTheDocument();
-    expect(screen.getByText(/Location:/)).toBeInTheDocument();
-    expect(
-      screen.getByText(/Line 10, Column 5.*First Column: 1/)
-    ).toBeInTheDocument();
-
-    // Check highlighted text inside pre
-    const highlighted = screen.getByText("Invalid");
-    expect(highlighted).toBeInTheDocument();
-    expect(highlighted).toHaveClass("highlighted-text");
-  });
-
-  it("renders multiple validation messages", () => {
-    const mockMessages: NuValidatorMessage[] = [
-      {
-        Type: "warning",
-        Message: "A warning occurred.",
-        "Last Line": 20,
-        "Last Column": 15,
-        "First Column": 5,
-        Extract: "<span>WarningText</span>",
-        HiliteStart: 6,
-        HiliteLength: 11,
-      },
-      {
-        Type: "info",
-        Message: "Just info.",
-        "Last Line": 30,
-        "Last Column": 25,
-        "First Column": 10,
-        Extract: "<p>InfoText</p>",
-        HiliteStart: 3,
-        HiliteLength: 8,
-      },
-    ];
-
-    render(<NuValidatorMessagesView messages={mockMessages} />);
-
-    expect(screen.getAllByText(/Type:/)).toHaveLength(2);
-    expect(screen.getAllByText(/Message:/)).toHaveLength(2);
     expect(screen.getByText("warning")).toBeInTheDocument();
-    expect(screen.getByText("A warning occurred.")).toBeInTheDocument();
-    expect(screen.getByText("info")).toBeInTheDocument();
-    expect(screen.getByText("Just info.")).toBeInTheDocument();
 
-    // Highlighted texts
-    expect(screen.getByText("WarningText")).toHaveClass("highlighted-text");
-    expect(screen.getByText("InfoText")).toHaveClass("highlighted-text");
+    expect(screen.getByText(/Element “img” is missing required attribute “alt”/)).toBeInTheDocument();
+    expect(screen.getByText(/Consider adding a lang attribute/)).toBeInTheDocument();
+
+    expect(screen.getByText(/Line 12, Column 5 \(First Column: 3\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Line 24, Column 10 \(First Column: 5\)/)).toBeInTheDocument();
+
+    // check if highlighted text is present
+    const highlighted = screen.getAllByText((_, node) => {
+      return node?.className === "highlighted-text";
+    });
+
+    expect(highlighted.length).toBe(2);
+    expect(highlighted[0]).toHaveTextContent("<img");
+    expect(highlighted[1]).toHaveTextContent("<html>");
   });
 });

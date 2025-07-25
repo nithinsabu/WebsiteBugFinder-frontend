@@ -3,7 +3,7 @@ import "./AxeCoreResponseView.css";
 interface AxeCoreNode {
     Impact?: string;
     Html?: string;
-    ["Failure Summary"]?: string;
+    FailureSummary?: string;
   }
   
   export interface AxeCoreViolation {
@@ -17,34 +17,44 @@ interface AxeCoreNode {
   
   interface Props {
     violations: AxeCoreViolation[];
+    errorFlag: boolean;
   }
   
-  const AxeViolationsView: React.FC<Props> = ({ violations }) => {
-    if (!violations || !violations?.length) {
+  const AxeViolationsView: React.FC<Props> = ({ violations, errorFlag }) => {
+
+    if (errorFlag!==false){
+      return (
+        <div className="axecore-response error">
+           Accessibility Violations failed to load.
+        </div>
+      );
+    }
+    if (!violations || 
+      !violations?.length) {
       return (
         <div className="axe-violation-placeholder">
-          <h3>No Accessibility Violations Found or Failed to load Accessibility Violations.</h3>
+          <h3>No Accessibility Violations Found.</h3>
         </div>
       );
     }
   
     return (
       <div className="axe-violations-container">
-        <h1>Accessibility Violations (Axe Core)</h1>
+        <h2>Accessibility Violations from Axe Core <strong>({violations.length})</strong></h2>
         {violations.map((violation, index) => (
           <div key={index} className="axe-violation-card">
-            <h4>{violation.Id || "Unknown Violation"}</h4>
+            <h4>Rule: {violation.Id}</h4>
             <p><strong>Description:</strong> {violation.Description}</p>
             <p><strong>Help:</strong> {violation.Help}</p>
   
             {violation.Nodes.length > 0 && (
               <div className="axe-node-list">
-                <h5>Affected Nodes:</h5>
+                <h4>Affected Nodes ({violation.Nodes.length}):</h4>
                 {violation.Nodes.map((node, idx) => (
                   <div key={idx} className="axe-node-card">
                     <p><strong>Impact:</strong> {node.Impact}</p>
                     <pre className="axe-node-html">{node.Html}</pre>
-                    <p><strong>Failure Summary:</strong> {node["Failure Summary"]}</p>
+                    <p><strong>Failure Summary:</strong> {node.FailureSummary}</p>
                   </div>
                 ))}
               </div>

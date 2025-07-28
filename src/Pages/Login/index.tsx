@@ -12,6 +12,10 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (email.length>100){
+      alert("Email is too long");
+      return;
+    }
     const baseUrl = import.meta.env.VITE_API_URL;
 
     try {
@@ -57,7 +61,7 @@ const Login: React.FC = () => {
 
       <form onSubmit={handleSubmit}>
         <input
-          type="text"
+          type="email"
           name="email"
           placeholder="Email"
           value={email}

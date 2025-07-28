@@ -40,7 +40,7 @@ const Upload: React.FC = () => {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {    
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (isSubmitting) return;
         setIsSubmitting(true);
@@ -48,7 +48,6 @@ const Upload: React.FC = () => {
         const baseUrl = import.meta.env.VITE_API_URL;
         const formData = new FormData();
 
-        
         if (!email || !name.trim()) {
             setIsSubmitting(false);
 
@@ -65,29 +64,53 @@ const Upload: React.FC = () => {
         if (!name.trim()) {
             alert("Project name is required.");
             return;
-          }
-          
-          const invalidChars = /[<>"'\\;|*?:#&]/;
-          if (invalidChars.test(name)) {
+        }
+
+        const invalidChars = /[<>"'\\;|*?:#&]/;
+        if (invalidChars.test(name)) {
             alert("Project name cannot contain escape characters.");
             return;
-          }
-          
-          const validImageExts = [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".svg"];
-          if (designFile) {
+        }
+
+        const validImageExts = [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".svg"];
+        if (designFile) {
             const designExt = designFile.name.substring(designFile.name.lastIndexOf(".")).toLowerCase();
             if (!validImageExts.includes(designExt)) {
-              alert("Invalid design file format. Allowed: png, jpg, jpeg, gif, bmp, svg.");
-              return;
+                alert("Invalid design file format. Allowed: png, jpg, jpeg, gif, bmp, svg.");
+                return;
             }
-          }
-          
-          if (specificationsFile) {
+        }
+        // Check file size: HTML or URL (HTML max 2MB)
+        if (htmlFile && htmlFile.size > 2 * 1024 * 1024) {
+            setIsSubmitting(false);
+            return alert("HTML file size must be less than 2MB.");
+        }
+
+        // Check file size: Design file (max 5MB)
+        if (designFile && designFile.size > 5 * 1024 * 1024) {
+            setIsSubmitting(false);
+            return alert("Design file size must be less than 5MB.");
+        }
+
+        // Check file size: Specifications file (max 2MB)
+        if (specificationsFile && specificationsFile.size > 2 * 1024 * 1024) {
+            setIsSubmitting(false);
+            return alert("Specification file size must be less than 2MB.");
+        }
+
+        if (specificationsFile) {
             const specExt = specificationsFile.name.substring(specificationsFile.name.lastIndexOf(".")).toLowerCase();
-            console.log(specExt);
             if (specExt !== ".txt" && specExt !== ".pdf") {
-              alert("Invalid specification file format. Allowed: txt, pdf.");
-              return;
+                alert("Invalid specification file format. Allowed: txt, pdf.");
+                return;
+            }
+        }
+        if (url.trim()) {
+            try {
+              new URL(url);
+            } catch (_) {
+              setIsSubmitting(false);
+              return alert("Invalid URL format.");
             }
           }
         if (htmlFile) {
@@ -156,8 +179,7 @@ const Upload: React.FC = () => {
 
             <label className="upload-label">
                 Optional: Upload design file:
-                <input type="file"     accept=".png,.jpg,.jpeg,.gif,.bmp,.svg"
-onChange={onDesignFileChange} />
+                <input type="file" accept=".png,.jpg,.jpeg,.gif,.bmp,.svg" onChange={onDesignFileChange} />
             </label>
 
             <label className="upload-label">

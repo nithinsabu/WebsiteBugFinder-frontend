@@ -37,7 +37,7 @@ const ListUploads: React.FC = () => {
         <p className="sidebar-empty">No URLs uploaded.</p>
       ) : (
         <ul className="url-list">
-          {webpages.map((page) => (
+          {[...webpages].reverse().map((page) => (
             <li key={page.id}>
             <Link to={`/view-webpage/${page.id}`} className="url-button full-link">
               <div className="link-title">{page.name || page.fileName || page.url || "Untitled"}</div>

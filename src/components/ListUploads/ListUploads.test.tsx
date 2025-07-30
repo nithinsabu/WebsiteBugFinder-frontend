@@ -91,7 +91,7 @@ describe("ListUploads Component", () => {
     renderWithStore(store);
   
     await waitFor(() => {
-      const links = screen.getAllByRole("link");
+      const links = screen.getAllByRole("link").reverse();
       expect(links).toHaveLength(mockResponse.length);
     
       mockResponse.forEach((item, i) => {

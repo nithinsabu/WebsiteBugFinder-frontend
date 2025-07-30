@@ -48,12 +48,8 @@ interface Props {
 }
 
 const LLMResponseView: React.FC<Props> = ({ llmResponseResult, errorFlag }) => {
-    if (errorFlag!==false) {
-        return (
-            <div className="llm-response error">
-                Gemini Review failed to load.
-            </div>
-        );
+    if (errorFlag !== false) {
+        return <div className="llm-response error">Gemini Review failed to load.</div>;
     }
     // console.log(llmResponseResult);
     const renderFindings = (findings?: Finding[]) => {
@@ -169,7 +165,7 @@ const LLMResponseView: React.FC<Props> = ({ llmResponseResult, errorFlag }) => {
                 </section>
             )}
 
-            {llmResponseResult["Other Issues"]?.length && (
+            {Array.isArray(llmResponseResult["Other Issues"]) && llmResponseResult["Other Issues"].length > 0 && (
                 <section className="other-issues">
                     <h2>Other Issues</h2>
                     {renderFindings(llmResponseResult["Other Issues"])}

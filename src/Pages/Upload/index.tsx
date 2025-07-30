@@ -108,7 +108,7 @@ const Upload: React.FC = () => {
         if (url.trim()) {
             try {
               new URL(url);
-            } catch (_) {
+            } catch {
               setIsSubmitting(false);
               return alert("Invalid URL format.");
             }

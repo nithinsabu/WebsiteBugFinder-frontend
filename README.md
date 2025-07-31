@@ -9,5 +9,10 @@ To run the project:
 2. Run the project: npm run dev
 
 To run the docker image:
-1. docker build -t react-app .
-2. docker run --build-args VITE_API_URL=<Provide backend url> -p <PORT>:80 --name <Provide name> --network <Provide network name> react-app
+1. docker build --build-args VITE_API_URL=<Provide backend url>/api -t react-app .
+2. docker run -p <PORT>:80 --name <Provide name> react-app
+
+Example run:
+docker run -p 5173:80 --name react-app react-app
+
+(Expose port 5173)
